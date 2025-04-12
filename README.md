@@ -202,8 +202,8 @@ Foresta is an advanced forest management system that integrates AI, software, an
 
 1. **Clone the repository**:
    ```
-   git clone https://github.com/yourusername/foresta.git
-   cd foresta
+   git clone https://github.com/lewiskimaru/simple-foresta.git
+   cd simple-foresta
    ```
 
 2. **Backend setup**:
