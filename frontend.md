@@ -53,7 +53,7 @@ The Foresta frontend provides an interactive interface for users to manage conse
 *   Route: `/login`
 *   Layout: Unauthenticated
 *   Content:
-    *   Foresta Logo.
+    *   Foresta Logo. (its just the word "Foresta.")
     *   Form fields: Email, Password.
     *   "Log In" button.
     *   Links: "Forgot Password?", "Don't have an account? Sign Up".
