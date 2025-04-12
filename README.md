@@ -69,47 +69,11 @@ Foresta is an advanced forest management system that integrates AI, software, an
 ```
 /foresta-app
 ├── /frontend                   # React frontend (Vite)
-│   ├── /public                 # Static assets
-│   ├── /src                    
-│   │   ├── /components         # UI components
-│   │   │   ├── /auth           # Authentication components
-│   │   │   ├── /dashboard      # Dashboard components
-│   │   │   ├── /species        # Species identification components
-│   │   │   ├── /guardian       # Guardian sensor components
-│   │   │   └── /common         # Shared components
-│   │   ├── /contexts           # React contexts
-│   │   ├── /hooks              # Custom hooks
-│   │   ├── /pages              # Page components
-│   │   ├── /services           # API services
-│   │   ├── /utils              # Utility functions
-│   │   ├── App.jsx             # Main application
-│   │   ├── main.jsx            # Entry point
-│   │   └── axios.js            # Axios configuration
-│   ├── index.html              # HTML template
-│   ├── vite.config.js          # Vite configuration
-│   └── package.json            # Frontend dependencies
 ├── /backend                    # Flask backend
 │   ├── /routes                 # API routes
-│   │   ├── auth.py             # Authentication endpoints
-│   │   ├── areas.py            # Area management endpoints
-│   │   ├── species.py          # Species identification endpoints
-│   │   ├── sensors.py          # Guardian sensor endpoints
-│   │   └── alerts.py           # Alert management endpoints
 │   ├── /models                 # Database models
-│   │   ├── user.py             # User model
-│   │   ├── area.py             # Area model
-│   │   ├── species.py          # Species model
-│   │   ├── sensor.py           # Sensor model
-│   │   └── alert.py            # Alert model
 │   ├── /services               # Business logic
-│   │   ├── auth_service.py     # Authentication logic
-│   │   ├── area_service.py     # Area management logic
-│   │   ├── species_service.py  # Species identification logic
-│   │   ├── sensor_service.py   # Sensor data processing
-│   │   └── osm_service.py      # OpenStreetMap integration
 │   ├── /utils                  # Utility functions
-│   │   ├── gee_client.py       # Google Earth Engine client
-│   │   └── db_helper.py        # Database utilities
 │   ├── app.py                  # Main Flask application
 │   ├── config.py               # Configuration settings
 │   └── requirements.txt        # Backend dependencies
@@ -341,93 +305,6 @@ Foresta is an advanced forest management system that integrates AI, software, an
   }
   ```
 
-## Guardian Sensor Simulation
-
-For development and testing purposes, a sensor simulator is provided that mimics the behavior of real Guardian sensors:
-
-```python
-# Sample code from scripts/sensor_simulator.py
-import requests
-import json
-import time
-import random
-from datetime import datetime
-
-# Configuration
-API_URL = "http://localhost:5001/api/sensors/data"
-AREA_ID = 1  # Default area ID for testing
-
-def generate_sensor_reading(sensor_id, area_id):
-    """Generate a simulated sensor reading"""
-    reading = {
-        "sensor_id": sensor_id,
-        "area_id": area_id,
-        "timestamp": datetime.now().isoformat(),
-        "readings": {
-            "temperature": round(random.uniform(15, 35), 2),
-            "humidity": round(random.uniform(30, 90), 2),
-            "smoke_level": round(random.uniform(0, 0.2), 3),
-            "sound_level": round(random.uniform(30, 70), 2)
-        },
-        "status": {
-            "battery": round(random.uniform(60, 100), 2),
-            "system_health": "good",
-            "gps": {
-                "latitude": 36.821528 + random.uniform(-0.005, 0.005),
-                "longitude": -1.292066 + random.uniform(-0.005, 0.005)
-            }
-        }
-    }
-    
-    # Occasionally generate an alert
-    if random.random() < 0.1:  # 10% chance
-        alert_type = random.choice(["fire", "logging"])
-        if alert_type == "fire":
-            reading["alert"] = {
-                "type": "fire",
-                "level": "high",
-                "smoke_level": round(random.uniform(0.8, 1.0), 3)
-            }
-        else:
-            reading["alert"] = {
-                "type": "logging",
-                "level": "medium",
-                "audio_signature": "chainsaw_detected",
-                "confidence": round(random.uniform(0.7, 0.95), 3)
-            }
-    
-    return reading
-
-def simulate_sensor(sensor_id, area_id, interval=60):
-    """Send simulated sensor data at regular intervals"""
-    while True:
-        reading = generate_sensor_reading(sensor_id, area_id)
-        try:
-            response = requests.post(API_URL, json=reading)
-            print(f"Sent data for sensor {sensor_id}: {response.status_code}")
-            print(json.dumps(reading, indent=2))
-        except Exception as e:
-            print(f"Error sending data: {e}")
-        
-        time.sleep(interval)
-
-if __name__ == "__main__":
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Guardian Sensor Simulator")
-    parser.add_argument("--sensor", type=int, default=1, help="Sensor ID to simulate")
-    parser.add_argument("--area", type=int, default=AREA_ID, help="Area ID")
-    parser.add_argument("--interval", type=int, default=60, help="Interval in seconds")
-    
-    args = parser.parse_args()
-    
-    print(f"Starting Guardian Sensor Simulator for sensor {args.sensor} in area {args.area}")
-    print(f"Sending data every {args.interval} seconds")
-    print("Press Ctrl+C to stop")
-    
-    simulate_sensor(args.sensor, args.area, args.interval)
-```
-
 ## External API Integration
 
 ### PlantNet API
@@ -443,6 +320,35 @@ if __name__ == "__main__":
 - **Integration**: Backend integration for satellite analysis
 - **Credentials**: Service account key stored securely
 - **Usage**: Forest statistics and deforestation analysis
+
+## Running the Sensor Simulator
+
+1.  Ensure the backend server is running.
+2.  Open a new terminal.
+3.  Navigate to the simulator directory:
+    ```bash
+    cd scripts 
+    python sensor_simulator.py --endpoint http://localhost:5000/api/... --interval 60 # Sends data every 60s
+    # Or run specific commands if designed that way (e.g., python simulator.py --send-alert fire)
+    ```
+4.  Observe the Guardian Monitoring page in the frontend application for incoming data/alerts.
+
+## Guidance for AI Developer
+- **Understand the Core Flow:** Pay close attention to the User Flow and Core Workflows sections. The separation of concerns (frontend search vs. backend boundary fetching) is critical.
+- **Use Provided Scripts for Logic & Keys:** The `.js` and `.py` files in `scripts.md` are your primary reference for *how* to interact with the external APIs (OSM, PlantNet, GEE) and the expected data formats. Extract API keys and service account details from these files. **Do not** just copy the scripts wholesale; integrate their *logic* into the Flask services and React services/components.
+- **Follow the Project Structure:** Adhere to the proposed `/frontend` (Vite/React) and `/backend` (Flask) structure. Use Blueprints in Flask and component-based architecture in React.
+- **Implement Authentication:** Use Flask-JWT-Extended for backend token management and protect API routes. Implement login/signup forms and token handling (storage, sending in headers) on the frontend.
+- **Database Interaction:** Use SQLAlchemy in the backend for ORM. Define models as specified in the schema. Ensure all resource-related API endpoints perform authorization checks (user owns the requested area/sensor/etc.).
+- **API Integration:**
+    *   Frontend: Axios for API calls. Implement services for OSM Nominatim and PlantNet. Handle API responses and errors. Store keys in `.env`.
+    *   Backend: `requests` library for OSM Overpass. `earthengine-api` for GEE. Wrap these calls in service functions. Handle errors and timeouts.
+- **Mapping:** Use React Leaflet or Mapbox React GL on the frontend. Fetch boundary data from the backend and display polygons. Fetch sensor locations and display markers.
+- **Charts:** Use Recharts or Chart.js on the frontend to display GEE deforestation trends and sensor data history.
+- **Sensor Simulation:** Create the `scripts/sensor_simulator.py` script. It should periodically send JSON data (matching `sensor.json` format) to the backend's `/api/sensors/data` endpoint using the `requests` library. Allow configuration via command-line arguments (endpoint URL, interval, optional specific alert triggering).
+- **Error Handling:** Implement robust error handling on both frontend (displaying user-friendly messages) and backend (logging errors, returning appropriate HTTP status codes).
+- **State Management (Frontend):** Use React Context API for simple global state (like user auth status) or consider Zustand/Redux Toolkit if state becomes complex across many components (e.g., managing sensor data updates). React Query is highly recommended for managing server state (API data fetching, caching, background updates).
+- **User-Specific Data:** This is critical. Ensure all backend queries retrieving lists of areas, species IDs, etc., are filtered by the `user_id` obtained from the JWT token.
+
 
 ## License
 
