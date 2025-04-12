@@ -345,17 +345,4 @@ The Foresta backend provides a RESTful API service that enables the frontend to 
 *   `earthengine-api`: Google Earth Engine Python client.
 *   `werkzeug`: WSGI utility library (includes password hashing).
 
-## Potential Challenges & Considerations
-
-*   **CORS:** Ensure `Flask-CORS` is configured correctly, especially for production (don't allow `*`).
-*   **Authentication:** Securely manage JWT secrets. Implement refresh token logic correctly.
-*   **Authorization:** Rigorously enforce user ownership checks in all relevant API endpoints.
-*   **GEE Performance & Quotas:** GEE tasks can be slow. Use asynchronous task queues (Celery) for GEE analysis. Monitor GEE quotas. Handle `ee.EEException` errors.
-*   **OSM Overpass API Limits:** Be respectful of the public Overpass API. Implement delays if making many requests. Consider hosting your own instance for heavy use. Handle request errors gracefully.
-*   **Database Performance:** Index frequently queried columns (FKs, timestamps, status, user\_id, area\_id). Use appropriate data types (JSONB/Geometry in PostgreSQL). Implement pagination for large datasets.
-*   **Sensor Authentication:** Decide on and implement a secure method for authenticating incoming sensor data.
-*   **Error Handling:** Implement comprehensive error handling and logging throughout the application. Return meaningful HTTP status codes and error messages.
-*   **Scalability:** SQLite is simple but limits concurrency. Plan for PostgreSQL if scaling is anticipated. Asynchronous tasks are key for scaling operations like GEE analysis.
-*   **Configuration Management:** Use environment variables (`.env`) and Flask's config objects (`config.py`) effectively to manage settings for different environments (dev, prod). **Never commit secrets to Git.**
-
 ---
